@@ -1,29 +1,62 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Switch } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  Dimensions,
+  StatusBar,
+} from "react-native";
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+
+const FirstRoute = () => (
+  <View style={[styles.scene, { backgroundColor: "white" }]} />
+);
+
+const SecondRoute = () => (
+  <View style={[styles.scene, { backgroundColor: "white" }]} />
+);
+
+const initialLayout = { width: Dimensions.get("window").width };
+
+const renderScene = SceneMap({
+  first: FirstRoute,
+  second: SecondRoute,
+});
 
 export default function DashboardScreen(props) {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: "first", title: "Personnalisation" },
+    { key: "second", title: "Stat" },
+  ]);
+
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      activeColor={"white"}
+      inactiveColor={"#FFC9B9"}
+      style={{ backgroundColor: "#216869" }}
+    />
+  );
+
   return (
-    <View style={styles.container}>
-      <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-      />
-      <Text>Aidez nous à personnaliser le prfil de votre enfant</Text>
-      <Text>Personnaliser les infos</Text>
-      <Text>Stat perso</Text>
-    </View>
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      renderTabBar={renderTabBar}
+      onIndexChange={setIndex}
+      initialLayout={initialLayout}
+      style={styles.container}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: StatusBar.currentHeight,
+  },
+  scene: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
